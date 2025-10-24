@@ -19,30 +19,53 @@ Once selected, it prints "cd <path>" to stdout, which your shell can execute to 
 	Run: RunGoto,
 }
 
+// This function needs to print a directory path to STDOUT
+// Any other printing/logging must be done on stderr
 func RunGoto(cmd *cobra.Command, args []string) {
 	rocketRoot := GetRocketRoot()
 
-	// Find subdirectories
-	findCmd := exec.Command("find", rocketRoot, "-type", "d", "-mindepth", "1", "-maxdepth", "1")
-	fzfCmd := exec.Command("fzf")
+	if len(args) == 0 {
+		// Original behavior: list all and fzf
+		findCmd := exec.Command("find", rocketRoot, "-type", "d", "-mindepth", "1", "-maxdepth", "1")
+		fzfCmd := exec.Command("fzf")
 
-	// Pipe find output to fzf
-	fzfCmd.Stdin, _ = findCmd.StdoutPipe()
+		fzfCmd.Stdin, _ = findCmd.StdoutPipe()
+		findCmd.Start()
 
-	// Run find in background
-	findCmd.Start()
+		output, err := fzfCmd.Output()
+		if err != nil {
+			return
+		}
 
-	// Get fzf output
-	output, err := fzfCmd.Output()
-	if err != nil {
-		// fzf was cancelled or no selection
+		selected := strings.TrimSpace(string(output))
+		if selected != "" {
+			fmt.Println(selected)
+		}
 		return
 	}
 
-	selected := strings.TrimSpace(string(output))
-	if selected != "" {
-		fmt.Println(selected)
+	// Fuzzy match mode
+	query := strings.Join(args, " ")
+	matches := getMatchingDirs(rocketRoot, query)
+
+	if len(matches) == 1 {
+		fmt.Println(matches[0])
+	} else if len(matches) > 1 {
+		// Pipe matches to fzf
+		fzfCmd := exec.Command("fzf")
+		fzfCmd.Stdin = strings.NewReader(strings.Join(matches, "\n"))
+
+		output, err := fzfCmd.Output()
+		if err != nil {
+			return
+		}
+
+		selected := strings.TrimSpace(string(output))
+		if selected != "" {
+			fmt.Println(selected)
+		}
 	}
+	// If no matches, do nothing
 }
 
 func init() {
