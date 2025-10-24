@@ -41,7 +41,7 @@ func RunGoto(cmd *cobra.Command, args []string) {
 
 	selected := strings.TrimSpace(string(output))
 	if selected != "" {
-		fmt.Println("cd " + selected)
+		fmt.Println(selected)
 	}
 }
 

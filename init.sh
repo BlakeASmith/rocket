@@ -10,6 +10,10 @@ function rocket {
     # Run rocket-bin, capture its stdout, and 'eval' it
     eval "$(rocket-bin "$@")"
     ;;
+  goto)
+    # Run rocket-bin, capture its stdout, and 'cd' to it
+    cd "$(rocket-bin "$@")"
+    ;;
 
   # ---
   # Commands that don't need shell integration
