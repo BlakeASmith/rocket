@@ -7,8 +7,14 @@ function rocket {
   # Commands that need shell integration
   # ---
   new)
-    # Run rocket-bin, capture its stdout, and 'eval' it
-    eval "$(rocket-bin "$@")"
+    # Check if --no-go flag is present
+    if [[ "$*" == *"--no-go"* ]]; then
+      # Run rocket-bin directly without eval (no directory change)
+      rocket-bin "$@"
+    else
+      # Run rocket-bin, capture its stdout, and 'eval' it (includes cd command)
+      eval "$(rocket-bin "$@")"
+    fi
     ;;
   goto)
     # Run rocket-bin, capture its stdout, and 'cd' to it

@@ -39,14 +39,9 @@ func RunNew(cmd *cobra.Command, args []string) {
 
 	fmt.Fprintf(os.Stderr, "Created new project directory: %s\n", projectPath)
 
-	// Change to the new directory unless --no-go is specified
+	// Output cd command to stdout unless --no-go is specified
 	if !noGo {
-		err = os.Chdir(projectPath)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error changing to directory %s: %v\n", projectPath, err)
-			os.Exit(1)
-		}
-		fmt.Fprintf(os.Stderr, "Changed to directory: %s\n", projectPath)
+		fmt.Printf("cd %s\n", projectPath)
 	}
 }
 
