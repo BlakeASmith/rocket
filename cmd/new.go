@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/cobra"
 )
 
 // newCmd represents the new command
@@ -13,10 +14,14 @@ var newCmd = &cobra.Command{
 	Short: "Create a new project",
 	Long: `Create a new project with the specified name.
 
-The name parameter is required.`,
+The name parameter is required.
+By default, this command will change to the newly created directory.
+Use --no-go to prevent changing directory.`,
 	Args: cobra.ExactArgs(1),
 	Run:  RunNew,
 }
+
+var noGo bool
 
 func RunNew(cmd *cobra.Command, args []string) {
 	name := args[0]
@@ -33,8 +38,14 @@ func RunNew(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Fprintf(os.Stderr, "Created new project directory: %s\n", projectPath)
+
+	// Output cd command to stdout unless --no-go is specified
+	if !noGo {
+		fmt.Printf("cd %s\n", projectPath)
+	}
 }
 
 func init() {
 	rootCmd.AddCommand(newCmd)
+	newCmd.Flags().BoolVar(&noGo, "no-go", false, "Don't change to the newly created directory")
 }
