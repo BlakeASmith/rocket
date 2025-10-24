@@ -4,9 +4,12 @@ Rocket is a CLI tool for managing your project folders.
 
 ## Installation
 
-1. Build the binary: `go build -o rocket-bin`
-2. Run `rocket init` to get the shell integration code.
-3. Add the output to your shell profile (e.g., `~/.bashrc` or `~/.zshrc`).
+Run `./install.sh` to build, install the binary, and set up shell integration automatically. Requires Go and optionally sudo for system installation.
+
+## Requirements
+
+- Go (for building)
+- [fzf](https://github.com/junegunn/fzf) (for fuzzy search in goto and rm commands)
 
 ## Configuration
 
@@ -45,6 +48,34 @@ This will list project directories and allow you to fuzzy search and select one 
 ### `rocket init`
 
 Prints the shell integration code for installation.
+
+### `rocket ls [query]`
+
+Lists project directories under `rocket_root`. If a query is provided, lists only directories that fuzzy match the query.
+
+Example:
+```
+rocket ls
+rocket ls myproject
+```
+
+### `rocket mv <source_query> <dest>`
+
+Moves or renames a project directory using fuzzy search for the source. The destination must be relative to `rocket_root`.
+
+Example:
+```
+rocket mv oldname newname
+```
+
+### `rocket rm [query]`
+
+Removes a project directory using fuzzy search. If no query, uses fzf for selection.
+
+Example:
+```
+rocket rm myproject
+```
 
 ## License
 
